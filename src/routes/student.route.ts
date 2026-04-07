@@ -1,4 +1,3 @@
-// src/routes/index.ts
 import { Router } from "express";
 import {
   deleteStudent,
@@ -6,9 +5,14 @@ import {
   getStudentById,
   studentDataCreate,
   updateStudent,
-} from "../controllers/student.controller.js";
+  registerStudent,
+  loginStudent,
+} from "../controllers/student.controller";
 
 const studentRouter = Router();
+
+studentRouter.post("/register", registerStudent);
+studentRouter.post("/login", loginStudent);
 
 studentRouter.get("/", getAllStudents);
 studentRouter.get("/:id", getStudentById);

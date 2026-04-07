@@ -2,6 +2,7 @@ export interface IStudent {
   name: string;
   email: string;
   phone: string;
+  password: string; // Auth field
   photo?: string;
   department: string;
   studentId: string;

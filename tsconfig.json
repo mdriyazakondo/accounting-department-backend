@@ -50,8 +50,8 @@
     "rootDir": "./src",
     "outDir": "./dist",
 
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "target": "ESNext",
     "types": ["node"],
 

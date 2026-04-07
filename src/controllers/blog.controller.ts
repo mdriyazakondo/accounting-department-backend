@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { IBlog } from "../types/blog.js";
-import Blog from "../models/blog/blog.js";
+import { IBlog } from "../types/blog";
+import Blog from "../models/blog/blog";
 
 export const blogDataCreate = async (
   req: Request,

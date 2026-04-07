@@ -1,6 +1,157 @@
 import { Request, Response } from "express";
-import Student from "../models/student/student.model.js";
-import { IStudent } from "../types/Student.js";
+import Student from "../models/student/student.model";
+import { IStudent } from "../types/Student";
+import sendResponse from "../utils/sendResponse";
+
+// REGISTER a new student
+export const registerStudent = async (req: Request, res: Response) => {
+  try {
+    const {
+      name,
+      email,
+      phone,
+      password,
+      photo,
+      department,
+      studentId,
+      class_role,
+      gender,
+      year,
+      dateOfBirth,
+      father_name,
+      mother_name,
+      hobbies,
+    }: Partial<IStudent> = req.body;
+
+    // Validate required fields
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !password ||
+      !department ||
+      !studentId ||
+      !gender ||
+      !year ||
+      !dateOfBirth
+    ) {
+      return sendResponse(res, {
+        statusCode: 400,
+        success: false,
+        message: "All required fields must be provided",
+        data: null,
+      });
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      return sendResponse(res, {
+        statusCode: 400,
+        success: false,
+        message: "Password must be at least 6 characters long",
+        data: null,
+      });
+    }
+
+    // Check if email already exists
+    const existingStudent = await Student.findOne({ email });
+    if (existingStudent) {
+      return sendResponse(res, {
+        statusCode: 400,
+        success: false,
+        message: "Email already registered",
+        data: null,
+      });
+    }
+
+    // Create new student
+    const newStudent = await Student.create({
+      name,
+      email,
+      phone,
+      password,
+      photo: photo || undefined,
+      department,
+      studentId,
+      class_role: class_role || undefined,
+      gender,
+      year,
+      dateOfBirth,
+      father_name: father_name || undefined,
+      mother_name: mother_name || undefined,
+      hobbies: hobbies || undefined,
+    } as any);
+
+    return sendResponse(res, {
+      statusCode: 201,
+      success: true,
+      message: "Student registered successfully",
+      data: newStudent,
+    });
+  } catch (error) {
+    console.error(error);
+    return sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: "Error registering student",
+      data: error,
+    });
+  }
+};
+
+// LOGIN student
+export const loginStudent = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate inputs
+    if (!email || !password) {
+      return sendResponse(res, {
+        statusCode: 400,
+        success: false,
+        message: "Email and password are required",
+        data: null,
+      });
+    }
+
+    // Find student by email
+    const student = await Student.findOne({ email });
+    if (!student) {
+      return sendResponse(res, {
+        statusCode: 401,
+        success: false,
+        message: "Invalid email or password",
+        data: null,
+      });
+    }
+
+    // Compare passwords
+    const isPasswordValid = await student.comparePassword(password);
+    if (!isPasswordValid) {
+      return sendResponse(res, {
+        statusCode: 401,
+        success: false,
+        message: "Invalid email or password",
+        data: null,
+      });
+    }
+
+    return sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Login successful",
+      data: student,
+    });
+  } catch (error) {
+    console.error(error);
+    return sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: "Error during login",
+      data: error,
+    });
+  }
+};
 
 // CREATE a new student
 export const studentDataCreate = async (req: Request, res: Response) => {
@@ -9,6 +160,7 @@ export const studentDataCreate = async (req: Request, res: Response) => {
       name,
       email,
       phone,
+      password,
       photo,
       department,
       studentId,
@@ -24,52 +176,73 @@ export const studentDataCreate = async (req: Request, res: Response) => {
       !name ||
       !email ||
       !phone ||
+      !password ||
       !department ||
       !studentId ||
       !gender ||
       !year ||
       !dateOfBirth
     ) {
-      return res
-        .status(400)
-        .json({ message: "All required fields must be provided" });
+      return sendResponse(res, {
+        statusCode: 400,
+        success: false,
+        message: "All required fields must be provided",
+        data: null,
+      });
     }
-
-    console.log(req, res);
 
     const newStudent = await Student.create({
       name,
       email,
       phone,
-      photo,
+      password,
+      photo: photo || undefined,
       department,
       studentId,
-      class_role,
+      class_role: class_role || undefined,
       gender,
       year,
       dateOfBirth,
-      father_name,
-      mother_name,
-      hobbies,
-    } as IStudent);
+      father_name: father_name || undefined,
+      mother_name: mother_name || undefined,
+      hobbies: hobbies || undefined,
+    } as any);
 
-    res
-      .status(201)
-      .json({ message: "Student created successfully", data: newStudent });
+    return sendResponse(res, {
+      statusCode: 201,
+      success: true,
+      message: "Student created successfully",
+      data: newStudent,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error", error });
+    return sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: "Server error",
+      data: error,
+    });
   }
 };
 
 // GET all students
 export const getAllStudents = async (_req: Request, res: Response) => {
   try {
-    const students: IStudent[] = await Student.find();
-    res.status(200).json({ data: students });
+    const students = await Student.find();
+    return sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Students retrieved successfully",
+      data: students,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error", error });
+    return sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: "Server error",
+      data: error,
+    });
   }
 };
 
@@ -77,14 +250,29 @@ export const getAllStudents = async (_req: Request, res: Response) => {
 export const getStudentById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const student: IStudent | null = await Student.findById(id);
+    const student = await Student.findById(id);
     if (!student) {
-      return res.status(404).json({ message: "Student not found" });
+      return sendResponse(res, {
+        statusCode: 404,
+        success: false,
+        message: "Student not found",
+        data: null,
+      });
     }
-    res.status(200).json({ data: student });
+    return sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Student retrieved successfully",
+      data: student,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error", error });
+    return sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: "Server error",
+      data: error,
+    });
   }
 };
 
@@ -92,18 +280,31 @@ export const getStudentById = async (req: Request, res: Response) => {
 export const updateStudent = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const updatedStudent: IStudent | null = await Student.findByIdAndUpdate(
-      id,
-      req.body,
-      { new: true },
-    );
+    const updatedStudent = await Student.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
     if (!updatedStudent) {
-      return res.status(404).json({ message: "Student not found" });
+      return sendResponse(res, {
+        statusCode: 404,
+        success: false,
+        message: "Student not found",
+        data: null,
+      });
     }
-    res.status(200).json({ message: "Student updated", data: updatedStudent });
+    return sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Student updated successfully",
+      data: updatedStudent,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error", error });
+    return sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: "Server error",
+      data: error,
+    });
   }
 };
 
@@ -111,13 +312,28 @@ export const updateStudent = async (req: Request, res: Response) => {
 export const deleteStudent = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const deletedStudent: IStudent | null = await Student.findByIdAndDelete(id);
+    const deletedStudent = await Student.findByIdAndDelete(id);
     if (!deletedStudent) {
-      return res.status(404).json({ message: "Student not found" });
+      return sendResponse(res, {
+        statusCode: 404,
+        success: false,
+        message: "Student not found",
+        data: null,
+      });
     }
-    res.status(200).json({ message: "Student deleted successfully" });
+    return sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Student deleted successfully",
+      data: null,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error", error });
+    return sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: "Server error",
+      data: error,
+    });
   }
 };
