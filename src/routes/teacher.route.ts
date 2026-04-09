@@ -6,7 +6,7 @@ import {
   getTeacherById,
   updateTeacher,
   deleteTeacher,
-} from "../controllers/teacher.controller";
+} from "../controllers/teacher.controller.js";
 
 const teacherRouter = Router();
 

@@ -1,5 +1,5 @@
 import { Schema, model, Document } from "mongoose";
-import { IEvent } from "../../types/event";
+import { IEvent } from "../../types/event.js";
 
 export interface IEventDocument extends IEvent, Document {}
 

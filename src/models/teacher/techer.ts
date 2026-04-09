@@ -1,6 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import bcrypt from "bcryptjs";
-import { ITeacher } from "../../types/teacher";
+import { ITeacher } from "../../types/teacher.js";
 
 export interface ITeacherDocument extends ITeacher, Document {
   comparePassword(candidatePassword: string): Promise<boolean>;

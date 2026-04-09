@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import Teacher from "../models/teacher/techer";
-import { ITeacher } from "../types/teacher";
-import sendResponse from "../utils/sendResponse";
+import Teacher from "../models/teacher/teacher.js";
+import { ITeacher } from "../types/teacher.js";
+import sendResponse from "../utils/sendResponse.js";
 
 // REGISTER a new teacher
 export const registerTeacher = async (req: Request, res: Response) => {

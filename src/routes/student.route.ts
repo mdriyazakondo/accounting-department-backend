@@ -7,7 +7,7 @@ import {
   updateStudent,
   registerStudent,
   loginStudent,
-} from "../controllers/student.controller";
+} from "../controllers/student.controller.js";
 
 const studentRouter = Router();
 

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import Event from "../models/event/event";
-import { IEvent } from "../types/event";
-import sendResponse from "../utils/sendResponse";
+import Event from "../models/event/event.js";
+import { IEvent } from "../types/event.js";
+import sendResponse from "../utils/sendResponse.js";
 
 // CREATE a new event
 export const createEvent = async (req: Request, res: Response) => {

@@ -8,7 +8,7 @@ import {
   deleteEvent,
   joinEvent,
   leaveEvent,
-} from "../controllers/event.controller";
+} from "../controllers/event.controller.js";
 
 const eventRouter = Router();
 

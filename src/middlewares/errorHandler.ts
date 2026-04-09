@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import sendResponse from "../utils/sendResponse";
+import sendResponse from "../utils/sendResponse.js";
 
 interface CustomError extends Error {
   statusCode?: number;
